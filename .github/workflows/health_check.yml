@@ -1,0 +1,34 @@
+name: vietgil.com Health Check
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # 6시간마다
+    - cron: '0 0 * * 1'     # 매주 월요일 09:00 KST (UTC 00:00)
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write Google credentials to temp file
+        run: echo '${{ secrets.GOOGLE_CREDENTIALS }}' > /tmp/google_credentials.json
+
+      - name: Run health check
+        env:
+          SHEETS_ID: ${{ secrets.SHEETS_ID }}
+          GOOGLE_CREDENTIALS_PATH: /tmp/google_credentials.json
+          ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python3 health_check.py

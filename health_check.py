@@ -31,7 +31,7 @@ CRITICAL_THRESHOLD = 5  # 긴급: 응답시간 5초 이상
 
 
 def load_env():
-    """~/.vietgil.env 파일에서 환경변수 로드"""
+    """~/.vietgil.env 파일에서 환경변수 로드 (없으면 os.environ 그대로 사용)"""
     if not ENV_PATH.exists():
         return
     with open(ENV_PATH) as f:
