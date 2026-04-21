@@ -26,6 +26,40 @@ CLAUDE.md의 모든 지침을 적용해서 글을 작성하세요.
 - 다음 편 예고로 마무리
 - 작성자 서명 포함
 
+**본문은 Gutenberg 블록 형식으로 작성:**
+
+단락:
+```
+<!-- wp:paragraph -->
+<p>본문 내용</p>
+<!-- /wp:paragraph -->
+```
+
+H2 제목:
+```
+<!-- wp:heading {"level":2} -->
+<h2>소제목</h2>
+<!-- /wp:heading -->
+```
+
+이미지 자리표시자:
+```
+<!-- wp:image -->
+<figure class="wp-block-image"><img src="" alt="[Alt Text]"/></figure>
+<!-- /wp:image -->
+```
+
+CTA 버튼:
+```
+<!-- wp:buttons -->
+<div class="wp-block-buttons">
+  <div class="wp-block-button">
+    <a class="wp-block-button__link" href="투어문의링크">투어 문의하기</a>
+  </div>
+</div>
+<!-- /wp:buttons -->
+```
+
 아래 형식으로 파일 저장:
 `posts/YYYY-MM-DD-[slug].md`
 
@@ -41,9 +75,13 @@ categories, tags, excerpt, series, series_part
 
 원고를 분석해서 이미지 삽입 가이드를 생성하세요.
 
-**각 삽입 위치마다 아래 형식으로 원고 안에 표기:**
+**각 삽입 위치 직후에 아래 코드블록을 원고 안에 삽입:**
+
 ```
-<!-- 이미지: [파일명].jpg | Alt: [포커스키워드 포함 설명] | 위치: [위치 설명] | 추천 구도: [촬영 방향/구도 힌트] -->
+📷 이미지 정보
+파일명: sapa-trekking-example.jpg
+Alt Text: 사파 트레킹 타반 마을 계단식 논
+위치: [H2 제목] 문단 직후
 ```
 
 **파일명 규칙:**
@@ -52,56 +90,71 @@ categories, tags, excerpt, series, series_part
 - 예: `sapa-trekking-terraced-field-morning.jpg`
 
 **이미지 가이드 별도 섹션을 원고 맨 아래에 추가:**
+
 ```
 ---
 ## 📷 이미지 가이드
 
-| 번호 | 파일명 | Alt Text | 삽입 위치 | 추천 구도 |
-|------|--------|----------|-----------|-----------|
-| 대표 | [파일명] | [Alt] | 썸네일 | [구도] |
-| 1 | [파일명] | [Alt] | [위치] | [구도] |
-| 2 | [파일명] | [Alt] | [위치] | [구도] |
-...
+| 번호 | 파일명 | Alt Text | 삽입 위치 |
+|------|--------|----------|-----------|
+| 대표 | [파일명] | [Alt] | 썸네일 |
+| 1 | [파일명] | [Alt] | [위치] |
+| 2 | [파일명] | [Alt] | [위치] |
 ```
 
 ---
 
-## Phase 3 — 썸네일 제작 가이드 생성
+## Phase 3 — 이미지 생성 프롬프트 가이드
 
-실제 사진을 기반으로 Canva에서 만들 수 있는 썸네일 가이드를 생성하세요.
+Gemini + 나노바나나로 이미지를 생성할 수 있도록 각 이미지마다 영문 프롬프트를 작성하세요.
 
 **원고 맨 아래 이미지 가이드 다음에 추가:**
+
 ```
 ---
-## 🖼️ 썸네일 제작 가이드
+## 🎨 Gemini 이미지 생성 프롬프트
 
-**추천 베이스 사진:** [이미지 가이드의 몇 번 사진 / 어떤 장면]
-**이유:** [이 사진이 썸네일에 적합한 이유]
+### 대표 이미지 (썸네일)
+파일명: [slug]-thumbnail.jpg
+크기: 1200 × 675px
 
-**텍스트 오버레이:**
-- 메인 텍스트: [제목 압축 버전, 20자 이내]
-- 서브 텍스트: [보조 설명, 15자 이내]
-- 브랜드 텍스트: Vietgil
-
-**Canva 제작 설정:**
-- 사이즈: 1200 × 675px (16:9)
-- 텍스트 위치: [좌하단 / 우하단 / 중앙 등]
-- 텍스트 배경: 반투명 다크 오버레이 권장
-- 폰트: 굵은 고딕 계열
-
-**파일명:** [slug]-thumbnail.jpg
-```
+프롬프트:
+[영문 프롬프트 — 장소, 시간대, 분위기, 구도, 스타일 포함]
+예: "Morning mist over Sapa terraced rice fields, golden hour light,
+wide landscape shot, photorealistic, travel photography style,
+no people, vibrant green colors"
 
 ---
 
-## Phase 4 — 이미지 리사이즈 안내
+### 본문 이미지 1
+파일명: [파일명].jpg
 
-실제 사진 업로드 전 준비사항을 안내하세요.
+프롬프트:
+[영문 프롬프트]
 
-**원고 맨 아래에 추가:**
+---
+
+### 본문 이미지 2
+파일명: [파일명].jpg
+
+프롬프트:
+[영문 프롬프트]
+```
+
+**프롬프트 작성 원칙:**
+- 장소 + 시간대 + 날씨/분위기 + 구도 + 스타일 순서로 작성
+- `photorealistic, travel photography style` 항상 포함
+- 사람이 필요한 경우: `Vietnamese local people, natural candid`
+- 사람 불필요한 경우: `no people` 명시
+- 부정적 요소 제거: `no watermark, no text, high quality`
+
+---
+
+## Phase 4 — 이미지 업로드 전 체크리스트
+
 ```
 ---
-## 📐 이미지 업로드 전 체크리스트
+## 📐 이미지 업로드 체크리스트
 
 **본문 이미지 (총 N장):**
 - 권장 크기: 가로 1200px 이상
@@ -137,24 +190,24 @@ python3 upload_to_wp.py posts/[저장한파일명].md
 ✅ 5단계 완료
 
 ━━━━━━━━━━━━━━━━━━━━━━
-Phase 1 원고 작성     ✅
-Phase 2 이미지 가이드  ✅  [N]곳
-Phase 3 썸네일 가이드  ✅
-Phase 4 리사이즈 안내  ✅
-Phase 5 WP 업로드     ✅
-━━━━━━━━━━━━━━━━━━━━━━
-
 제목: [글 제목]
-슬러그: /[slug]/
 포커스 키워드: [키워드]
+슬러그: /[slug]/
+━━━━━━━━━━━━━━━━━━━━━━
+Phase 1 원고 작성        ✅
+Phase 2 이미지 가이드    ✅  [N]곳
+Phase 3 이미지 프롬프트  ✅  [N]개
+Phase 4 리사이즈 안내    ✅
+Phase 5 WP 업로드        ✅
+━━━━━━━━━━━━━━━━━━━━━━
 
 🔗 WordPress 편집 링크: [링크]
 
-📋 남은 작업 (직접 해야 할 것):
-□ 사진 [N]장 준비 (이미지 가이드 참조)
-□ 썸네일 Canva 제작 → [slug]-thumbnail.jpg
+📋 남은 작업:
+□ Gemini에서 이미지 [N]장 생성 (프롬프트 가이드 참조)
 □ 이미지 리사이즈 (sips -Z 1200 *.jpg)
 □ WordPress에서 이미지 업로드 및 삽입
+□ Alt Text 입력
 □ Rank Math SEO 점수 확인 (80점 이상)
 □ 최종 검토 후 발행
 ```
