@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIETGIL LIVE</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0a0e13;
+      --bg2:      #0d1520;
+      --bg3:      #111d2e;
+      --green:    #00ff88;
+      --cyan:     #00d4ff;
+      --yellow:   #ffcc00;
+      --red:      #ff4444;
+      --text:     #c5d8e8;
+      --muted:    #4a6a7a;
+      --border:   #1a3040;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      background-image:
+        linear-gradient(rgba(0,255,136,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,136,.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--green);
+    }
+    .logo { font-size: 20px; font-weight: 700; color: var(--green); letter-spacing: 5px; }
+    .logo-sub { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 2px; }
+    .cursor {
+      display: inline-block; width: 10px; height: 17px;
+      background: var(--green); vertical-align: middle; margin-left: 4px;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .header-right { text-align: right; }
+    .clock { font-size: 22px; font-weight: 500; color: var(--cyan); letter-spacing: 3px; }
+    .last-upd { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      padding: 9px 20px; margin-bottom: 10px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; font-weight: 500; letter-spacing: 1px;
+      transition: background .4s, border-color .4s;
+    }
+    .status-bar.ok    { background: #091a11; border-color: var(--green); }
+    .status-bar.warn  { background: #1a170a; border-color: var(--yellow); }
+    .status-bar.error { background: #1a0a0a; border-color: var(--red); }
+
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot.ok    { background: var(--green);  box-shadow: 0 0 7px var(--green);  animation: pg 2s infinite; }
+    .dot.warn  { background: var(--yellow); box-shadow: 0 0 7px var(--yellow); }
+    .dot.error { background: var(--red);    box-shadow: 0 0 7px var(--red);    animation: pr 1s infinite; }
+    @keyframes pg { 0%,100%{opacity:1} 50%{opacity:.4} }
+    @keyframes pr { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    /* ── CARDS ── */
+    .cards {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 10px;
+    }
+    .card {
+      background: var(--bg2); border: 1px solid var(--border);
+      padding: 16px 18px;
+    }
+    .card-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+    .card-value { font-size: 30px; font-weight: 700; color: var(--green); margin-bottom: 10px; }
+    .card-value.warn  { color: var(--yellow); }
+    .card-value.error { color: var(--red); }
+    .spark svg { display: block; }
+
+    /* ── TABLES ── */
+    .tables { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .panel { background: var(--bg2); border: 1px solid var(--border); overflow: hidden; }
+
+    .panel-head {
+      padding: 9px 16px; background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      font-size: 10px; color: var(--green); letter-spacing: 2px; text-transform: uppercase;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .panel-count { font-size: 9px; color: var(--muted); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th {
+      padding: 7px 12px; text-align: left;
+      color: var(--muted); font-weight: 400; font-size: 9px; letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 6px 12px; border-bottom: 1px solid #0c1a26; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #0f1e30; }
+
+    .badge {
+      display: inline-block; padding: 1px 7px;
+      font-size: 9px; border-radius: 2px; letter-spacing: .5px;
+    }
+    .badge.ok    { background: #082218; color: var(--green);  border: 1px solid #0f3d28; }
+    .badge.warn  { background: #211a08; color: var(--yellow); border: 1px solid #3d3008; }
+    .badge.error { background: #210808; color: var(--red);    border: 1px solid #3d1010; }
+
+    .panel-foot {
+      padding: 6px 12px; font-size: 9px; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    .empty { text-align: center; padding: 28px; color: var(--muted); font-size: 11px; letter-spacing: 1px; }
+
+    @media (max-width: 700px) {
+      .cards  { grid-template-columns: 1fr; }
+      .tables { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="logo">VIETGIL LIVE<span class="cursor"></span></div>
+      <div class="logo-sub">vietgil.com · monitoring system · auto-refresh 5min</div>
+    </div>
+    <div class="header-right">
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="last-upd" id="last-upd">--</div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar ok" id="status-bar">
+    <span class="dot ok" id="dot"></span>
+    <span id="status-text">로딩 중...</span>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">최근 응답시간</div>
+      <div class="card-value" id="v-response">--</div>
+      <div class="spark" id="sp-response"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">정상 비율 (최근 50회)</div>
+      <div class="card-value" id="v-uptime">--</div>
+      <div class="spark" id="sp-uptime"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">경고·오류 비율 (최근 50회)</div>
+      <div class="card-value warn" id="v-warn">--</div>
+      <div class="spark" id="sp-warn"></div>
+    </div>
+  </div>
+
+  <!-- TABLES -->
+  <div class="tables">
+    <div class="panel">
+      <div class="panel-head">
+        <span>최근 점검 기록</span>
+        <span class="panel-count" id="cnt-status"></span>
+      </div>
+      <div id="tbl-status"><div class="empty">loading...</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <span>구글 검색 순위</span>
+        <span class="panel-count" id="cnt-gsc"></span>
+      </div>
+      <div id="tbl-gsc"><div class="empty">loading...</div></div>
+      <div class="panel-foot" id="gsc-foot"></div>
+    </div>
+  </div>
+
+<script>
+const SHEET_ID = '1_U1lBJcSfoy6ud_OBEcv27MCFerjvojtGRMy1Mm0VFk';
+
+/* ── CLOCK ── */
+function tick() {
+  const d = new Date();
+  document.getElementById('clock').textContent =
+    [d.getHours(), d.getMinutes(), d.getSeconds()]
+      .map(n => String(n).padStart(2, '0')).join(':');
+}
+setInterval(tick, 1000);
+tick();
+
+/* ── SHEETS FETCH ── */
+async function fetchSheet(name) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`;
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(text.slice(text.indexOf('(') + 1, text.lastIndexOf(')')));
+  if (!json.table || !json.table.rows) return [];
+  const cols = json.table.cols.map(c => c.label || c.id);
+  return json.table.rows
+    .filter(r => r && r.c)
+    .map(r => {
+      const obj = {};
+      r.c.forEach((cell, i) => { obj[cols[i]] = parseCell(cell); });
+      return obj;
+    })
+    .filter(r => Object.values(r).some(v => v != null));
+}
+
+function parseCell(cell) {
+  if (!cell || cell.v == null) return null;
+  // Google Sheets returns dates as Date(y,m,d,h,min,s) — month is 0-indexed
+  if (typeof cell.v === 'string' && cell.v.startsWith('Date(')) {
+    const m = cell.v.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)/);
+    if (m) {
+      const d = new Date(+m[1], +m[2], +m[3], +(m[4]||0), +(m[5]||0), +(m[6]||0));
+      return d.toLocaleDateString('ko-KR') + ' ' +
+             d.toLocaleTimeString('ko-KR', { hour12: false });
+    }
+  }
+  return cell.v;
+}
+
+/* ── SPARKLINE ── */
+function sparkline(values, w = 120, h = 28, color = '#00ff88') {
+  if (!values || values.length < 2) return '';
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 0.001;
+  const pad = 3;
+  const iw = w - pad * 2, ih = h - pad * 2;
+  const step = iw / (values.length - 1);
+  const pts = values.map((v, i) => {
+    const x = (pad + i * step).toFixed(1);
+    const y = (pad + ih - ((v - min) / range * ih)).toFixed(1);
+    return `${x},${y}`;
+  }).join(' ');
+  const lx = (pad + (values.length - 1) * step).toFixed(1);
+  const ly = (pad + ih - ((values.at(-1) - min) / range * ih)).toFixed(1);
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lx}" cy="${ly}" r="2.5" fill="${color}"/>
+  </svg>`;
+}
+
+/* ── HELPERS ── */
+function badge(status) {
+  if (!status) return '<span class="badge">-</span>';
+  if (status === '정상') return `<span class="badge ok">${status}</span>`;
+  if (String(status).includes('경고')) return `<span class="badge warn">${status}</span>`;
+  return `<span class="badge error">${status}</span>`;
+}
+function fmt(ts) { return ts ? String(ts).slice(0, 16) : '-'; }
+function num(v) { return v == null ? '-' : v; }
+
+/* ── MAIN UPDATE ── */
+async function update() {
+  try {
+    /* 사이트상태 */
+    const all = await fetchSheet('사이트상태');
+    const rows = all.slice(-50).reverse();   // 최신 50개, 최신순
+
+    /* Status bar */
+    const latest = rows[0] || {};
+    const st = latest['상태'] || '';
+    const bar = document.getElementById('status-bar');
+    const dot = document.getElementById('dot');
+    const stxt = document.getElementById('status-text');
+    bar.className = 'status-bar';
+    dot.className = 'dot';
+    if (st === '정상') {
+      bar.classList.add('ok');    dot.classList.add('ok');
+      stxt.textContent = `STATUS: 정상  ──  응답 ${latest['응답시간(초)']}초  ·  ${fmt(latest['체크시간'])}`;
+    } else if (String(st).includes('경고')) {
+      bar.classList.add('warn');  dot.classList.add('warn');
+      stxt.textContent = `STATUS: ${st}  ──  응답 ${latest['응답시간(초)']}초  ·  ${fmt(latest['체크시간'])}`;
+    } else if (st) {
+      bar.classList.add('error'); dot.classList.add('error');
+      stxt.textContent = `STATUS: ${st}  ──  ${fmt(latest['체크시간'])}`;
+    } else {
+      bar.classList.add('ok');    dot.classList.add('ok');
+      stxt.textContent = '데이터 없음';
+    }
+
+    /* Cards */
+    const rts = rows.map(r => parseFloat(r['응답시간(초)'])).filter(v => !isNaN(v));
+    if (rts.length) {
+      const latest_rt = rts[0];
+      const el = document.getElementById('v-response');
+      el.textContent = `${latest_rt}s`;
+      el.className = 'card-value' + (latest_rt >= 5 ? ' error' : latest_rt >= 3 ? ' warn' : '');
+      document.getElementById('sp-response').innerHTML = sparkline([...rts].reverse().slice(-20));
+    }
+
+    const total = rows.length || 1;
+    const okCnt   = rows.filter(r => r['상태'] === '정상').length;
+    const warnCnt = total - okCnt;
+    const uptPct  = ((okCnt / total) * 100).toFixed(1);
+    const warnPct = ((warnCnt / total) * 100).toFixed(1);
+
+    const uptEl  = document.getElementById('v-uptime');
+    uptEl.textContent = `${uptPct}%`;
+    uptEl.className = 'card-value' + (parseFloat(uptPct) < 95 ? ' warn' : '');
+
+    const warnEl = document.getElementById('v-warn');
+    warnEl.textContent = `${warnPct}%`;
+    warnEl.className = 'card-value' + (parseFloat(warnPct) > 5 ? ' error' : parseFloat(warnPct) > 0 ? ' warn' : '');
+
+    // sparkline: 이동 평균처럼 최근 20회 ok=1 / not-ok=0
+    const okArr = [...rows].reverse().slice(-20).map(r => r['상태'] === '정상' ? 1 : 0);
+    document.getElementById('sp-uptime').innerHTML = sparkline(okArr);
+    document.getElementById('sp-warn').innerHTML   = sparkline(okArr.map(v => 1 - v), 120, 28, '#ffcc00');
+
+    /* Status table (최근 15건) */
+    document.getElementById('cnt-status').textContent = `총 ${all.length}건`;
+    document.getElementById('tbl-status').innerHTML = rows.length
+      ? `<table>
+          <thead><tr><th>시간</th><th>상태</th><th>코드</th><th>응답(초)</th></tr></thead>
+          <tbody>${rows.slice(0, 15).map(r => `<tr>
+            <td style="color:var(--muted)">${fmt(r['체크시간'])}</td>
+            <td>${badge(r['상태'])}</td>
+            <td style="color:#7ddfbe">${num(r['응답코드'])}</td>
+            <td>${num(r['응답시간(초)'])}</td>
+          </tr>`).join('')}</tbody>
+        </table>`
+      : '<div class="empty">데이터 없음</div>';
+
+    /* 구글순위 */
+    const gscAll = await fetchSheet('구글순위');
+    document.getElementById('cnt-gsc').textContent = `총 ${gscAll.length}건`;
+
+    // 키워드별 최신 1건
+    const kwMap = {};
+    gscAll.forEach(r => { if (r['키워드']) kwMap[r['키워드']] = r; });
+    const gscRows = Object.values(kwMap);
+
+    document.getElementById('tbl-gsc').innerHTML = gscRows.length
+      ? `<table>
+          <thead><tr><th>키워드</th><th>평균순위</th><th>클릭</th><th>노출</th><th>CTR</th></tr></thead>
+          <tbody>${gscRows.map(r => {
+            const pos = r['평균순위'];
+            const pf  = parseFloat(pos);
+            const pc  = isNaN(pf) ? 'var(--muted)' : pf <= 10 ? 'var(--green)' : pf <= 30 ? 'var(--yellow)' : '#ff8844';
+            const ctr = r['CTR(%)'];
+            return `<tr>
+              <td>${r['키워드'] || '-'}</td>
+              <td style="color:${pc};font-weight:700">${pos != null && pos !== '-' ? pos + '위' : '-'}</td>
+              <td style="color:#7ddfbe">${num(r['클릭수'])}</td>
+              <td style="color:#7ddfbe">${num(r['노출수'])}</td>
+              <td style="color:var(--muted)">${ctr != null ? ctr + '%' : '-'}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>`
+      : '<div class="empty">데이터 없음</div>';
+
+    const refTime = gscRows[0] ? fmt(gscRows[0]['체크시간']) : '--';
+    document.getElementById('gsc-foot').textContent = `기준: ${refTime}  ·  최근 7일 평균`;
+
+    document.getElementById('last-upd').textContent =
+      `last updated: ${new Date().toLocaleTimeString('ko-KR')}`;
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('status-text').textContent = `데이터 로드 실패 — ${e.message}`;
+  }
+}
+
+update();
+setInterval(update, 5 * 60 * 1000);
+</script>
+</body>
+</html>
