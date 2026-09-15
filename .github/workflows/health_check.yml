@@ -39,3 +39,4 @@ jobs:
           GOOGLE_CREDENTIALS_PATH: /tmp/google_credentials.json
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
         run: python3 gsc_rank.py
+
